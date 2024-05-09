@@ -12,6 +12,8 @@ import threading
 import urllib3
 urllib3.disable_warnings()
 
+VERSION = "0.1.0"
+
 ## DINGDING_WEBHOOK = "https://oapi.dingtalk.com/robot/send?access_token=XXXXXXXXXXXXXXXXXXXXXXXX"
 DING_WEBHOOK = ""
 ## DINGDING_SECRET = "SECXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -22,33 +24,6 @@ PORT = 14500
 SERVICE_URL = "http://{}:{}/".format(HOST, PORT)
 
 DELAY_TIME = 2 * 60 * 60 # hour * minute * second
-
-# class FlaskApp(Flask):
-#     def __init__(self, *args, **kwargs):
-#         super(Server, self).__init__(*args, **kwargs)
-#         self._activate_background_job()
-
-#     def _activate_background_job(self):
-#         def check_alive(webshell_list: list):
-#             while(True):
-#                 print("Check...")
-#                 if len(webshell_list) == 0:
-#                     time.sleep(10)
-#                 else:
-#                     for w in webshell_list:
-#                         resp = requests.get(w["path"], verify=False)
-#                         if resp.status_code == 200:
-#                             flag = True
-#                         else:
-#                             flag = False
-#                         if w['status'] != flag:
-#                             Server.msg(w, flag)
-
-#                     time.sleep(DELAY_TIME)
-#         thread = threading.Thread(target=check_alive, )
-#         thread.start()
-
-
 
 class Server():
 
@@ -167,7 +142,7 @@ class Client():
     def list_shell():
         resp = requests.get(SERVICE_URL + "list", verify=False)
         if resp.status_code == 200:
-            print(resp.json())
+            print(json.dumps(json.loads(resp.text), indent=4))
             print("[+] Success")
 
     @staticmethod
@@ -218,6 +193,16 @@ class Client():
 
 def help():
     print("""
+
+ _____________________
+< Oh!webshell Online! >
+ ---------------------
+        \   ^__^
+         \  (oo)\_______      @Author: Arm!tage
+            (__)\       )\/\  @Version: {ver}
+                ||----w |
+                ||     ||
+
 USAGE:
     Run Service
         python3 {script} server
@@ -231,7 +216,7 @@ USAGE:
         
     Export
         curl -k http://{host}:{port}/list
-""".format(script=sys.argv[0], host=HOST, port=PORT))
+""".format(script=sys.argv[0], host=HOST, port=PORT, ver=VERSION))
     exit()
 
 def main():
