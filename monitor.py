@@ -12,7 +12,7 @@ import threading
 import urllib3
 urllib3.disable_warnings()
 
-VERSION = "0.1.0"
+VERSION = "v0.1.0"
 
 ## DINGDING_WEBHOOK = "https://oapi.dingtalk.com/robot/send?access_token=XXXXXXXXXXXXXXXXXXXXXXXX"
 DING_WEBHOOK = ""
