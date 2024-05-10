@@ -110,7 +110,10 @@ class Server():
 
         @self.app.route("/list", methods=['GET', 'POST'])
         def list_shell():
-            return jsonify(self.webshell_list), 200
+            webshell_list = []
+            for shell in self.shell_list:
+                webshell_list.append(shell.to_dict())
+            return jsonify(self.shell_list), 200
 
         @self.app.route("/del", methods=['POST'])
         def del_shell():
