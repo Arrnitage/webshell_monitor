@@ -89,15 +89,14 @@ class Server():
 
 
     def service(self):
-        def new_shell(shell: dict):
-            shell_obj = {
-                "uuid": Server.gen_uuid(),
-                "name": shell["name"],
-                "path": shell["path"],
-                "desc": shell["desc"],
-                "status": False
-            }
-            self.webshell_list.append(shell_obj)
+        
+        def alive_msg(webshell: Shell, isOnline: bool):
+            if isOnline:
+                title = "🟢{0} is Online🟢".format(webshell.name)
+            else:
+                title = "🔴{0} is Offline🔴".format(webshell.name)
+            msg = MSG_TEMPLATE_1.format(title, webshell.path, webshell.desc)
+            Utils.send_msg(msg)
        
         @self.app.route("/add", methods = ['POST'])
         def add_shell():
