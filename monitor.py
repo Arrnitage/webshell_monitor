@@ -12,7 +12,8 @@ import threading
 import urllib3
 urllib3.disable_warnings()
 
-VERSION = "v0.1.0"
+# VER
+VERSION = "v0.2.0_alpha"
 
 ## DINGDING_WEBHOOK = "https://oapi.dingtalk.com/robot/send?access_token=XXXXXXXXXXXXXXXXXXXXXXXX"
 DING_WEBHOOK = ""
@@ -26,7 +27,7 @@ SERVICE_URL = "http://{}:{}/".format(HOST, PORT)
 
 # CONST
 DELAY_TIME = 2 * 60 * 60 # hour * minute * second
-MSG_TEMPLATE_1 = "## {0}\n\n  \n\n**Path**: {1}\n\n**Description**: {2}"
+STANDARD_MSG = "## {0}\n\n  \n\n**Path**: {1}\n\n**Description**: {2}"
 
 
 
@@ -95,7 +96,7 @@ class Server():
                 title = "🟢{0} is Online🟢".format(webshell.name)
             else:
                 title = "🔴{0} is Offline🔴".format(webshell.name)
-            msg = MSG_TEMPLATE_1.format(title, webshell.path, webshell.desc)
+            msg = STANDARD_MSG.format(title, webshell.path, webshell.desc)
             Utils.send_msg(msg)
        
         @self.app.route("/add", methods = ['POST'])
@@ -104,7 +105,7 @@ class Server():
             shell_obj = Shell(shell["name"], shell["path"], shell["desc"])
             self.shell_list.append(shell_obj)
             title = "✅{0} Add✅".format(shell_obj.name)
-            msg = MSG_TEMPLATE_1.format(title, shell_obj.path, shell_obj.desc)
+            msg = STANDARD_MSG.format(title, shell_obj.path, shell_obj.desc)
             Utils.send_msg(msg=msg)
             return 'success', 200
 
@@ -122,7 +123,7 @@ class Server():
             for i in range(len(self.shell_list)):
                 if self.shell_list[i].uuid == j["uuid"]:
                     title = "❌{0} Delete❌".format(self.shell_list[i].name)
-                    msg = MSG_TEMPLATE_1.format(title, self.shell_list[i].path, self.shell_list[i].desc)
+                    msg = STANDARD_MSG.format(title, self.shell_list[i].path, self.shell_list[i].desc)
                     Utils.send_msg(msg=msg)
                     del self.shell_list[i]
             return 'success', 200
