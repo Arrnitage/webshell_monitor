@@ -115,9 +115,13 @@ class Server():
         @self.app.route("/del", methods=['POST'])
         def del_shell():
             j = request.get_json()
-            for i in range(len(self.webshell_list)):
-                if self.webshell_list[i]["uuid"] == j["uuid"]:
-                    del self.webshell_list[i]
+            
+            for i in range(len(self.shell_list)):
+                if self.shell_list[i].uuid == j["uuid"]:
+                    title = "❌{0} Delete❌".format(self.shell_list[i].name)
+                    msg = MSG_TEMPLATE_1.format(title, self.shell_list[i].path, self.shell_list[i].desc)
+                    Utils.send_msg(msg=msg)
+                    del self.shell_list[i]
             return 'success', 200
 
         @self.app.route("/load", methods=['POST'])
