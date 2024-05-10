@@ -168,8 +168,6 @@ class Server():
         self.app.run(HOST, PORT)
     
 
-
-
 class Client():
     @staticmethod
     def list_shell():
