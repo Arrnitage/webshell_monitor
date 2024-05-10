@@ -26,6 +26,59 @@ SERVICE_URL = "http://{}:{}/".format(HOST, PORT)
 
 # CONST
 DELAY_TIME = 2 * 60 * 60 # hour * minute * second
+MSG_TEMPLATE_1 = "## {0}\n\n  \n\n**Path**: {1}\n\n**Description**: {2}"
+
+
+
+class Shell():
+    def __init__(self, name: str, path: str, desc: str) -> None:
+        self.uuid = Utils.gen_uuid()
+        self.name = name
+        self.path = path
+        self.desc = desc
+        self.status = False
+
+    def to_dict(self) -> dict:
+        shell= {
+                "uuid": self.uuid,
+                "name": self.name,
+                "path": self.path,
+                "desc": self.desc,
+                "status": self.status
+            }
+        return shell
+    
+
+class Utils():
+    @staticmethod
+    def gen_uuid():
+        return str(uuid.uuid4())
+
+    @staticmethod
+    def sign_timestamp():
+        timestamp = str(round(time.time() * 1000))
+        secret_enc = SECRET.encode('utf-8')
+        string_to_sign = '{}\n{}'.format(timestamp, SECRET)
+        string_to_sign_enc = string_to_sign.encode('utf-8')
+        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+        return (sign, timestamp)
+    
+    @staticmethod
+    def send_msg(msg: str):
+  
+        body = {
+            "msgtype": "markdown",
+            "markdown": {
+                "title": "",
+                "text": msg
+            }
+        }
+        (sign, timestamp) = Utils.sign_timestamp()
+        webhook = DING_WEBHOOK + "&sign=" + sign + "&timestamp=" + timestamp
+        resp = requests.post(url=webhook, json=body, verify=False)
+        # print(resp.text)
+    
 
 class Server():
 
