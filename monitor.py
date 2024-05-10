@@ -118,12 +118,15 @@ class Server():
         return str(uuid.uuid4())
 
     @staticmethod
-    def msg(webshell: dict, isOnline: bool):
-        title = webshell["name"]
-        if isOnline:
-            msg = "## {0} is Online \n\n ✅ \n\n**Path**: {1}\n\n**Description**: {2}".format(webshell["name"], webshell["path"],webshell["desc"])
+    def msg(webshell: dict, isOnline: bool, action: str = ""):
+        if action == "add":
+            title = "💡{0} Add💡".format(webshell["name"])
         else:
-            msg = "## {0} is Offline \n\n ❌ \n\n**Path**: {1}\n\n**Description**: {2}".format(webshell["name"], webshell["path"],webshell["desc"])
+            if isOnline:
+                title = "✅{0} is Online✅".format(webshell["name"])
+            else:
+                title = "❌{0} is Offline❌".format(webshell["name"])
+        msg = "## {0}\n\n  \n\n**Path**: {1}\n\n**Description**: {2}".format(title, webshell["path"],webshell["desc"])
         body = {
             "msgtype": "markdown",
             "markdown": {
