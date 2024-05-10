@@ -128,7 +128,8 @@ class Server():
         def load_shell():
             shells = request.get_json()
             for s in shells:
-                new_shell(s)
+                webshell = Shell(s["name"], s["path"], s["desc"])
+                self.shell_list.append(webshell)
             return 'success', 200
         
         @self.app.route("/delay", methods=["POST"])
@@ -141,22 +142,22 @@ class Server():
         def check_alive():
             def run():
                 while(True):
-                    print("[*] {} webshells are on monitor.".format(len(self.webshell_list)))
-                    if len(self.webshell_list) == 0:
+                    print("[*] {} webshells are on monitor.".format(len(self.shell_list)))
+                    if len(self.shell_list) == 0:
                         time.sleep(10)
                     else:
-                        for i in range(len(self.webshell_list)):
+                        for i in range(len(self.shell_list)):
                             try: 
-                                resp = requests.get(self.webshell_list[i]["path"], verify=False)
+                                resp = requests.get(self.shell_list[i].path, verify=False)
                                 if resp.status_code == 200:
                                     flag = True
                                 else:
                                     flag = False
                             except Exception:
                                 flag = False
-                            if self.webshell_list[i]['status'] ^ flag:
-                                Server.msg(self.webshell_list[i], flag)
-                                self.webshell_list[i]['status'] = flag
+                            if self.shell_list[i].status ^ flag:
+                                alive_msg(self.shell_list[i], flag)
+                                self.shell_list[i].status = flag
                         time.sleep(self.delay)
             thread = threading.Thread(target=run)
             thread.start()
@@ -164,42 +165,6 @@ class Server():
         self.app.run(HOST, PORT)
     
 
-
-    @staticmethod
-    def sign_timestamp():
-        timestamp = str(round(time.time() * 1000))
-        secret_enc = SECRET.encode('utf-8')
-        string_to_sign = '{}\n{}'.format(timestamp, SECRET)
-        string_to_sign_enc = string_to_sign.encode('utf-8')
-        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-        return (sign, timestamp)
-
-    @staticmethod
-    def gen_uuid():
-        return str(uuid.uuid4())
-
-    @staticmethod
-    def msg(webshell: dict, isOnline: bool, action: str = ""):
-        if action == "add":
-            title = "💡{0} Add💡".format(webshell["name"])
-        else:
-            if isOnline:
-                title = "✅{0} is Online✅".format(webshell["name"])
-            else:
-                title = "❌{0} is Offline❌".format(webshell["name"])
-        msg = "## {0}\n\n  \n\n**Path**: {1}\n\n**Description**: {2}".format(title, webshell["path"],webshell["desc"])
-        body = {
-            "msgtype": "markdown",
-            "markdown": {
-                "title": "# {} is Offline".format(webshell["name"]),
-                "text": msg
-            }
-        }
-        (sign, timestamp) = Server.sign_timestamp()
-        webhook = DING_WEBHOOK + "&sign=" + sign + "&timestamp=" + timestamp
-        resp = requests.post(url=webhook, json=body, verify=False)
-        # print(resp.text)
 
 
 class Client():
