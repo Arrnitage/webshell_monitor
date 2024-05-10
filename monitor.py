@@ -83,7 +83,7 @@ class Utils():
 class Server():
 
     def __init__(self):
-        self.webshell_list = []
+        self.shell_list: list[Shell] = []
         self.app = Flask(__name__)
         self.delay = DELAY_TIME
 
