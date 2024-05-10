@@ -101,7 +101,11 @@ class Server():
         @self.app.route("/add", methods = ['POST'])
         def add_shell():
             shell = request.get_json()
-            new_shell(shell)
+            shell_obj = Shell(shell["name"], shell["path"], shell["desc"])
+            self.shell_list.append(shell_obj)
+            title = "✅{0} Add✅".format(shell_obj.name)
+            msg = MSG_TEMPLATE_1.format(title, shell_obj.path, shell_obj.desc)
+            Utils.send_msg(msg=msg)
             return 'success', 200
 
         @self.app.route("/list", methods=['GET', 'POST'])
